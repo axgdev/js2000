@@ -620,22 +620,13 @@ function drawPaletteSquares(x, y, palette, size) {
         colors = [0x578200, 0x317400, 0x005121, 0x00420C];
     }
     
+    // Draw very compact color squares - just single characters with spacing
     for (var i = 0; i < 4; i++) {
-        var squareX = x + (i * (size + 2));
+        var squareX = x + (i * 8); // Tight spacing
         var color = 0xFF000000 | colors[i]; // Add alpha channel
         
-        // Draw a square using filled block characters
-        for (var dy = 0; dy < size; dy += 5) {
-            for (var dx = 0; dx < size; dx += 3) {
-                drawText5x8(squareX + dx, y + dy, '#', color);
-            }
-        }
-        
-        // Border around square
-        drawText5x8(squareX - 2, y - 2, '+', COLORS.border);
-        drawText5x8(squareX + size, y - 2, '+', COLORS.border);
-        drawText5x8(squareX - 2, y + size, '+', COLORS.border);
-        drawText5x8(squareX + size, y + size, '+', COLORS.border);
+        // Just one character per color for maximum performance
+        drawText5x8(squareX, y, '#', color);
     }
 }
 
@@ -749,17 +740,17 @@ function draw() {
             var isSelected = (i === selectedPaletteIndex);
             var textColor = isSelected ? COLORS.selected : COLORS.text_main;
             
-            // Option name
+            // Option name (shorter to make room for color squares)
             var displayName = optionName;
-            if (displayName.length > 35) {
-                displayName = displayName.substring(0, 32) + '...';
+            if (displayName.length > 28) {
+                displayName = displayName.substring(0, 25) + '...';
             }
             
             drawText5x8(20, y, (isSelected ? '> ' : '  ') + displayName, textColor);
             
-            // Show palette preview for known palettes
+            // Show compact palette preview for all visible palettes
             if (findPaletteColors(optionName)) {
-                drawPaletteSquares(220, y - 2, optionName, 8);
+                drawPaletteSquares(240, y + 2, optionName, 4);
             }
             
             y += 12;
@@ -862,10 +853,10 @@ function handleInput() {
         
         if (input & (1 << 4)) { // Up
             selectedPaletteIndex = Math.max(0, selectedPaletteIndex - 1);
-            handleInput.debounce = 8;
+            handleInput.debounce = 3; // Faster scrolling
         } else if (input & (1 << 5)) { // Down
             selectedPaletteIndex = Math.min(availableOptions.length - 1, selectedPaletteIndex + 1);
-            handleInput.debounce = 8;
+            handleInput.debounce = 3; // Faster scrolling
         } else if (input & (1 << 8)) { // A - Select option
             var selectedOption = availableOptions[selectedPaletteIndex];
             // Preserve quote format from original value
