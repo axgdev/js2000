@@ -836,6 +836,9 @@ function draw() {
         drawText5x8(20, 230, statusMessage, msgColor);
     }
     
+    // Footer credit
+    drawText5x8(200, 230, 'Scripted by Prosty', COLORS.text_info);
+    
     animFrame++;
 }
 
