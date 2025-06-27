@@ -6,7 +6,6 @@
 #include "debug.h"
 #include "js2000_bindings.h"
 #include "js2000.h"
-#include "stb_truetype.h"
 #include "font_render.h"
 
 // Framebuffer for text rendering
