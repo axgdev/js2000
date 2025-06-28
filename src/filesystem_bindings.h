@@ -28,6 +28,8 @@ duk_ret_t duk_get_mod_time(duk_context *ctx);
 duk_ret_t duk_list_files(duk_context *ctx);
 duk_ret_t duk_list_dirs(duk_context *ctx);
 duk_ret_t duk_copy_dir_files_pattern(duk_context *ctx);
+duk_ret_t duk_list_files_count(duk_context *ctx);
+duk_ret_t duk_list_dirs_count(duk_context *ctx);
 
 #ifdef __cplusplus
 }

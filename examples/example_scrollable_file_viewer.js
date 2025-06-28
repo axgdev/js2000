@@ -1,4 +1,4 @@
-// js2000 JavaScript Core API (2024)
+// js2000 JavaScript Core API
 //
 // This file documents all global functions and FS methods available to JavaScript
 // scripts running in the js2000 Libretro core. Use these APIs for file I/O, text
@@ -12,7 +12,7 @@
 // - No browser APIs (window, document, DOM, etc).
 // - No setTimeout/setInterval or asynchronous features.
 // - No require/import or module system by default.
-// - Only the global functions and FS methods listed above are available for file and system access.
+// - Only the global functions and FS methods listed below are available for file and system access.
 // - Scripts run synchronously and block until finished, unless setMainLoop is used.
 // - You can define your own functions, use loops, and basic JS logic as usual.
 //
@@ -130,6 +130,13 @@
 //   Recursively copies files matching a pattern (e.g. "*.txt").
 //   Returns the number of files copied, or -1 on error.
 //
+// FS.listFilesCount(dirPath)
+//   Returns the number of regular files in the directory, or -1 on error.
+//   Example: var count = FS.listFilesCount("/mnt/sda1/mydir");
+//
+// FS.listDirsCount(dirPath)
+//   Returns the number of directories in the directory (excluding '.' and '..'),
+//   or -1 on error. Example: var count = FS.listDirsCount("/mnt/sda1/mydir");
 // ---
 //
 // NOTES:

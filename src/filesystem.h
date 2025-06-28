@@ -64,4 +64,10 @@ int fs_append_to_file(const char *path, const char *text);
 // Returns the number of files copied, or -1 on error.
 int fs_copy_dir_files_pattern(const char *src_dir, const char *dst_dir, const char *pattern, int overwrite);
 
+// Counts regular files in a directory. Returns the number of files, or -1 on error.
+int fs_list_files_count(const char *dirpath);
+
+// Counts directories in a directory (excluding . and ..). Returns the number of directories, or -1 on error.
+int fs_list_dirs_count(const char *dirpath);
+
 #endif // FILESYSTEM_H

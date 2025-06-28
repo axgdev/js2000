@@ -159,6 +159,8 @@ static const duk_function_list_entry fs_function_list[] = {
     { "getModTime", duk_get_mod_time, 1 },
     { "listFiles", duk_list_files, 1 },
     { "listDirs", duk_list_dirs, 1 },
+    { "listFilesCount", duk_list_files_count, 1 },
+    { "listDirsCount", duk_list_dirs_count, 1 },
     { "copyFile", duk_copy_file, DUK_VARARGS },
     { "copyDirFiles", duk_copy_dir_files, DUK_VARARGS },
     { "copyDirFilesPattern", duk_copy_dir_files_pattern, DUK_VARARGS },

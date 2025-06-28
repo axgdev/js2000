@@ -203,8 +203,11 @@ duk_ret_t duk_get_mod_time(duk_context *ctx) {
 duk_ret_t duk_list_files(duk_context *ctx) {
     const char *dirpath = duk_require_string(ctx, 0);
     duk_idx_t arr_idx = duk_push_array(ctx);
-    char *files[256];
-    int n = fs_list_files(dirpath, files, 256);
+    int count = fs_list_files_count(dirpath);
+    if (count <= 0) return 1;
+    char **files = (char**)malloc(sizeof(char*) * count);
+    if (!files) return 1;
+    int n = fs_list_files(dirpath, files, count);
     if (n > 0) {
         for (int i = 0; i < n; ++i) {
             duk_push_string(ctx, files[i]);
@@ -212,6 +215,7 @@ duk_ret_t duk_list_files(duk_context *ctx) {
             free(files[i]);
         }
     }
+    free(files);
     return 1;
 }
 
@@ -219,8 +223,11 @@ duk_ret_t duk_list_files(duk_context *ctx) {
 duk_ret_t duk_list_dirs(duk_context *ctx) {
     const char *dirpath = duk_require_string(ctx, 0);
     duk_idx_t arr_idx = duk_push_array(ctx);
-    char *dirs[256];
-    int n = fs_list_dirs(dirpath, dirs, 256);
+    int count = fs_list_dirs_count(dirpath);
+    if (count <= 0) return 1;
+    char **dirs = (char**)malloc(sizeof(char*) * count);
+    if (!dirs) return 1;
+    int n = fs_list_dirs(dirpath, dirs, count);
     if (n > 0) {
         for (int i = 0; i < n; ++i) {
             duk_push_string(ctx, dirs[i]);
@@ -228,5 +235,22 @@ duk_ret_t duk_list_dirs(duk_context *ctx) {
             free(dirs[i]);
         }
     }
+    free(dirs);
+    return 1;
+}
+
+// Expose to JS: listFilesCount(dirpath)
+duk_ret_t duk_list_files_count(duk_context *ctx) {
+    const char *dirpath = duk_require_string(ctx, 0);
+    int count = fs_list_files_count(dirpath);
+    duk_push_int(ctx, count);
+    return 1;
+}
+
+// Expose to JS: listDirsCount(dirpath)
+duk_ret_t duk_list_dirs_count(duk_context *ctx) {
+    const char *dirpath = duk_require_string(ctx, 0);
+    int count = fs_list_dirs_count(dirpath);
+    duk_push_int(ctx, count);
     return 1;
 }

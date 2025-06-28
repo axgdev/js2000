@@ -35,7 +35,7 @@ DUKTAPE JAVASCRIPT LIMITATIONS
 - No browser APIs (window, document, DOM, etc).
 - No setTimeout/setInterval or asynchronous features.
 - No require/import or module system by default.
-- Only the global functions and FS methods listed above are available for file and system access.
+- Only the global functions and FS methods listed below are available for file and system access.
 - Scripts run synchronously and block until finished, unless setMainLoop is used.
 - You can define your own functions, use loops, and basic JS logic as usual.
 
@@ -151,6 +151,14 @@ DUKTAPE JAVASCRIPT LIMITATIONS
 // FS.copyDirFilesPattern(srcDir, dstDir, pattern, overwrite=true)
 //   Recursively copies files matching a pattern (e.g. "*.txt").
 //   Returns the number of files copied, or -1 on error.
+//
+// FS.listFilesCount(dirPath)
+//   Returns the number of regular files in the directory, or -1 on error.
+//   Example: var count = FS.listFilesCount("/mnt/sda1/mydir");
+//
+// FS.listDirsCount(dirPath)
+//   Returns the number of directories in the directory (excluding '.' and '..'),
+//   or -1 on error. Example: var count = FS.listDirsCount("/mnt/sda1/mydir");
 ```
 
 ## Contributing

@@ -53,6 +53,24 @@ int fs_list_files(const char *dirpath, char **files, size_t max_files) {
     return (int)count;
 }
 
+// Count regular files in a directory
+int fs_list_files_count(const char *dirpath) {
+    DIR *dir = opendir(dirpath);
+    if (!dir) return -1;
+    struct dirent *entry;
+    int count = 0;
+    char pathbuf[512];
+    struct stat st;
+    while ((entry = readdir(dir))) {
+        snprintf(pathbuf, sizeof(pathbuf), "%s/%s", dirpath, entry->d_name);
+        if (stat(pathbuf, &st) == 0 && S_ISREG(st.st_mode)) {
+            count++;
+        }
+    }
+    closedir(dir);
+    return count;
+}
+
 int fs_remove_file(const char *path) {
     return remove(path);
 }
@@ -145,6 +163,25 @@ int fs_list_dirs(const char *dirpath, char **dirs, size_t max_dirs) {
     }
     closedir(dir);
     return (int)count;
+}
+
+// Count directories in a directory (excluding . and ..)
+int fs_list_dirs_count(const char *dirpath) {
+    DIR *dir = opendir(dirpath);
+    if (!dir) return -1;
+    struct dirent *entry;
+    int count = 0;
+    char pathbuf[512];
+    struct stat st;
+    while ((entry = readdir(dir))) {
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) continue;
+        snprintf(pathbuf, sizeof(pathbuf), "%s/%s", dirpath, entry->d_name);
+        if (stat(pathbuf, &st) == 0 && S_ISDIR(st.st_mode)) {
+            count++;
+        }
+    }
+    closedir(dir);
+    return count;
 }
 
 // Recursively copy all files and subdirectories from src_dir to dst_dir. If overwrite is 0, skip existing files; if 1, overwrite.
