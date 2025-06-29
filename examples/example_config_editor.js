@@ -181,10 +181,10 @@ function toggleEntry(idx) {
 }
 
 function draw() {
-    clearScreen(0xFF101040);
+    ScreenDraw.clear(0xFF101040);
     // Header
     var title = 'Config Editor: ' + (configFiles.length ? configFiles[currentFileIdx] : '(no files)');
-    drawText5x8(4, 0, title, 0xFFFFFF00);
+    ScreenDraw.text5x8(4, 0, title, 0xFFFFFF00);
     // Entries
     for (var i = 0; i < VISIBLE_LINES; ++i) {
         var entryIdx = scrollY + i;
@@ -193,17 +193,17 @@ function draw() {
         var y = HEADER_H + i * LINE_HEIGHT;
         var line = entry.key + ' = ' + entry.value;
         var color = (entryIdx === selectedLine) ? 0xFF00FF00 : 0xFFFFFFFF;
-        drawText5x8(8, y, line, color);
+        ScreenDraw.text5x8(8, y, line, color);
         // Mark if changed
         if (entry.value !== entry.orig) {
-            drawText5x8(SCREEN_W - 40, y, '*', 0xFFFF0000);
+            ScreenDraw.text5x8(SCREEN_W - 40, y, '*', 0xFFFF0000);
         }
     }
     // Footer
     var footer = 'Up/Down:Nav  L/R:File  A:Toggle  B:Save';
-    drawText5x8(4, SCREEN_H - FOOTER_H, footer, 0xFFAAAAAA);
+    ScreenDraw.text5x8(4, SCREEN_H - FOOTER_H, footer, 0xFFAAAAAA);
     if (message) {
-        drawText5x8(4, SCREEN_H - FOOTER_H - LINE_HEIGHT, message, 0xFFFFFF00);
+        ScreenDraw.text5x8(4, SCREEN_H - FOOTER_H - LINE_HEIGHT, message, 0xFFFFFF00);
     }
 }
 

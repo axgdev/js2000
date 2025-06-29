@@ -70,7 +70,7 @@ function drawStars(frame) {
         var color = (alpha << 24) | 0xFFFFFF;
         
         if (brightness > 15) {
-            drawText5x8(star.x, star.y, '*', color);
+            ScreenDraw.text5x8(star.x, star.y, '*', color);
         }
     }
 }
@@ -78,20 +78,20 @@ function drawStars(frame) {
 function drawBorder() {
     // Simple border using basic characters
     for (var x = 0; x < 320; x += 10) {
-        drawText5x8(x, 5, '~', COLORS.border);
-        drawText5x8(x, 235, '~', COLORS.border);
+        ScreenDraw.text5x8(x, 5, '~', COLORS.border);
+        ScreenDraw.text5x8(x, 235, '~', COLORS.border);
     }
     
     for (var y = 10; y < 240; y += 10) {
-        drawText5x8(5, y, '|', COLORS.border);
-        drawText5x8(315, y, '|', COLORS.border);
+        ScreenDraw.text5x8(5, y, '|', COLORS.border);
+        ScreenDraw.text5x8(315, y, '|', COLORS.border);
     }
     
     // Corner decorations
-    drawText5x8(5, 5, '+', COLORS.border);
-    drawText5x8(315, 5, '+', COLORS.border);
-    drawText5x8(5, 235, '+', COLORS.border);
-    drawText5x8(315, 235, '+', COLORS.border);
+    ScreenDraw.text5x8(5, 5, '+', COLORS.border);
+    ScreenDraw.text5x8(315, 5, '+', COLORS.border);
+    ScreenDraw.text5x8(5, 235, '+', COLORS.border);
+    ScreenDraw.text5x8(315, 235, '+', COLORS.border);
 }
 
 function drawProgressBar(x, y, width, progress) {
@@ -100,17 +100,17 @@ function drawProgressBar(x, y, width, progress) {
     
     // Background
     for (var i = 0; i < width; i += 5) {
-        drawText5x8(x + i, y, '-', COLORS.bg_darker);
+        ScreenDraw.text5x8(x + i, y, '-', COLORS.bg_darker);
     }
     
     // Filled portion
     for (var i = 0; i < filled; i += 5) {
-        drawText5x8(x + i, y, '=', COLORS.text_success);
+        ScreenDraw.text5x8(x + i, y, '=', COLORS.text_success);
     }
     
     // Progress indicator
     if (filled < width) {
-        drawText5x8(x + filled, y, '>', COLORS.text_title);
+        ScreenDraw.text5x8(x + filled, y, '>', COLORS.text_title);
     }
 }
 
@@ -205,7 +205,7 @@ function processNextCore() {
 
 function draw() {
     // Clean pink background
-    clearScreen(COLORS.bg_main);
+    ScreenDraw.clear(COLORS.bg_main);
     
     // Animated twinkling stars
     drawStars(animFrame);
@@ -215,15 +215,15 @@ function draw() {
     
     // Title
     var titleY = 20;
-    drawText8x8(80, titleY, 'ROM List Generator', COLORS.text_title);
-    drawText5x8(50, titleY + 12, 'Creates .gba stub files from roms/* folders', COLORS.text_info);
-    drawText5x8(40, titleY + 22, 'WARNING: This process can take a long time', COLORS.text_warning);
+    ScreenDraw.text8x8(80, titleY, 'ROM List Generator', COLORS.text_title);
+    ScreenDraw.text5x8(50, titleY + 12, 'Creates .gba stub files from roms/* folders', COLORS.text_info);
+    ScreenDraw.text5x8(40, titleY + 22, 'WARNING: This process can take a long time', COLORS.text_warning);
     
     var y = 65;
     
     if (totalCores > 0) {
         // Progress section
-        drawText5x8(20, y, 'Progress:', COLORS.text_main);
+        ScreenDraw.text5x8(20, y, 'Progress:', COLORS.text_main);
         y += 10;
         
         var progress = totalCores > 0 ? processedCores / totalCores : 0;
@@ -234,32 +234,32 @@ function draw() {
         if (isGenerating && currentCore) {
             progressText += ' (Processing: ' + currentCore + ')';
         }
-        drawText5x8(20, y, progressText, COLORS.text_info);
+        ScreenDraw.text5x8(20, y, progressText, COLORS.text_info);
         y += 10;
         
         // Show current file being created
         if (isGenerating && currentFile) {
-            drawText5x8(20, y, 'Creating: ' + currentFile, COLORS.text_file);
+            ScreenDraw.text5x8(20, y, 'Creating: ' + currentFile, COLORS.text_file);
             y += 10;
         }
         y += 5;
     }
     
     // Generated files count
-    drawText5x8(20, y, 'Generated files: ' + generatedFiles.length, COLORS.text_success);
+    ScreenDraw.text5x8(20, y, 'Generated files: ' + generatedFiles.length, COLORS.text_success);
     y += 15;
     
     // Status message
     if (statusMessage) {
         var msgColor = statusMessage.indexOf('ERROR') >= 0 ? COLORS.text_warning : COLORS.text_main;
-        drawText5x8(20, y, statusMessage, msgColor);
+        ScreenDraw.text5x8(20, y, statusMessage, msgColor);
         y += 10;
     }
     
     // Recent files list
     if (generatedFiles.length > 0) {
         y += 10;
-        drawText5x8(20, y, 'Recent files:', COLORS.text_title);
+        ScreenDraw.text5x8(20, y, 'Recent files:', COLORS.text_title);
         y += 10;
         
         var startIdx = Math.max(0, generatedFiles.length - 12);
@@ -268,27 +268,27 @@ function draw() {
             if (fileName.length > 45) {
                 fileName = fileName.substring(0, 42) + '...';
             }
-            drawText5x8(25, y, '- ' + fileName, COLORS.text_file);
+            ScreenDraw.text5x8(25, y, '- ' + fileName, COLORS.text_file);
             y += 9;
         }
         
         if (generatedFiles.length > 12) {
-            drawText5x8(25, y, '... and ' + (generatedFiles.length - 12) + ' more!', COLORS.text_info);
+            ScreenDraw.text5x8(25, y, '... and ' + (generatedFiles.length - 12) + ' more!', COLORS.text_info);
         }
     }
     
     // Controls at bottom
     var controlsY = 225;
     if (isGenerating) {
-        drawText5x8(20, controlsY, 'Working... Please wait!', COLORS.text_warning);
+        ScreenDraw.text5x8(20, controlsY, 'Working... Please wait!', COLORS.text_warning);
     } else if (generatedFiles.length > 0 && statusMessage.indexOf('COMPLETE') >= 0) {
-        drawText5x8(20, controlsY, '*** DONE! *** A: Generate Again', COLORS.text_success);
+        ScreenDraw.text5x8(20, controlsY, '*** DONE! *** A: Generate Again', COLORS.text_success);
     } else {
-        drawText5x8(20, controlsY, 'A: Start Generation', COLORS.text_white);
+        ScreenDraw.text5x8(20, controlsY, 'A: Start Generation', COLORS.text_white);
     }
     
     // Footer credit
-    drawText5x8(200, 230, 'Scripted by Prosty', COLORS.text_info);
+    ScreenDraw.text5x8(200, 230, 'Scripted by Prosty', COLORS.text_info);
     
     animFrame++;
     if (animFrame > 120) animFrame = 0;

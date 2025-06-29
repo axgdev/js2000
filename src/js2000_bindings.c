@@ -7,8 +7,8 @@
 #include "filesystem.h"
 #include "js2000.h"
 #include "filesystem_bindings.h"
-#include "font_render.h"
 #include "libretro.h"
+#include "screen_draw_bindings.h"
 
 // Extern framebuffer from js2000.c
 extern uint32_t js2000_fb[];
@@ -70,29 +70,6 @@ static duk_ret_t duk_print(duk_context *ctx) {
     return duk_console_log(ctx);
 }
 
-// Expose to JS: drawText8x8(x, y, text, color)
-static duk_ret_t duk_draw_text_8x8(duk_context *ctx) {
-    int nargs = duk_get_top(ctx);
-    if (nargs < 4) return DUK_RET_TYPE_ERROR;
-    int x = duk_to_int(ctx, 0);
-    int y = duk_to_int(ctx, 1);
-    const char *text = duk_to_string(ctx, 2);
-    uint32_t color = (uint32_t)duk_to_uint32(ctx, 3);
-    font_render_draw_text_8x8(js2000_fb, SCREEN_WIDTH, SCREEN_HEIGHT, x, y, text, color);
-    return 0;
-}
-
-// Expose to JS: drawText5x8(x, y, text, color)
-static duk_ret_t duk_draw_text_5x8(duk_context *ctx) {
-    int nargs = duk_get_top(ctx);
-    if (nargs < 4) return DUK_RET_TYPE_ERROR;
-    int x = duk_to_int(ctx, 0);
-    int y = duk_to_int(ctx, 1);
-    const char *text = duk_to_string(ctx, 2);
-    uint32_t color = (uint32_t)duk_to_uint32(ctx, 3);
-    font_render_draw_text_5x8(js2000_fb, SCREEN_WIDTH, SCREEN_HEIGHT, x, y, text, color);
-    return 0;
-}
 
 // Expose to JS: getInputState() returns an integer bitmask of current button state
 static duk_ret_t duk_get_input_state(duk_context *ctx) {
@@ -121,13 +98,6 @@ static duk_ret_t duk_set_main_loop(duk_context *ctx) {
     duk_dup(ctx, 0);
     duk_put_prop_string(ctx, -2, "__mainLoop");
     duk_pop(ctx);
-    return 0;
-}
-
-// Expose to JS: clearScreen(color)
-static duk_ret_t duk_clear_screen(duk_context *ctx) {
-    uint32_t color = (uint32_t)duk_to_uint32(ctx, 0);
-    clear_screen_c(color);
     return 0;
 }
 
@@ -183,14 +153,6 @@ void js2000_register_bindings(duk_context *ctx) {
     duk_push_c_function(ctx, duk_print, 1);
     duk_put_global_string(ctx, "print");
 
-    // Register drawText8x8(x, y, text, color)
-    duk_push_c_function(ctx, duk_draw_text_8x8, 4);
-    duk_put_global_string(ctx, "drawText8x8");
-
-    // Register drawText5x8(x, y, text, color)
-    duk_push_c_function(ctx, duk_draw_text_5x8, 4);
-    duk_put_global_string(ctx, "drawText5x8");
-
     // Register getInputState()
     duk_push_c_function(ctx, duk_get_input_state, 0);
     duk_put_global_string(ctx, "getInputState");
@@ -199,11 +161,10 @@ void js2000_register_bindings(duk_context *ctx) {
     duk_push_c_function(ctx, duk_set_main_loop, 1);
     duk_put_global_string(ctx, "setMainLoop");
 
-    // Register clearScreen(color)
-    duk_push_c_function(ctx, duk_clear_screen, 1);
-    duk_put_global_string(ctx, "clearScreen");
-
     // Register printToScreen(msg)
     duk_push_c_function(ctx, duk_print_to_screen, 1);
     duk_put_global_string(ctx, "printToScreen");
+
+    // Register ScreenDraw module (drawing/text/framebuffer)
+    register_screen_draw_module(ctx);
 }
