@@ -177,7 +177,7 @@ function clamp(val, min, max) {
 
 function draw() {
     // Clear screen (black)
-    clearScreen(0xFF000000);
+    ScreenDraw.clear(0xFF000000);
     // Draw visible lines
     for (var i = 0; i < VISIBLE_LINES; ++i) {
         var lineIdx = scrollY + i;

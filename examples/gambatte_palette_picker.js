@@ -626,20 +626,20 @@ function drawPaletteSquares(x, y, palette, size) {
         var color = 0xFF000000 | colors[i]; // Add alpha channel
         
         // Just one character per color for maximum performance
-        drawText5x8(squareX, y, '#', color);
+        ScreenDraw.text5x8(squareX, y, '#', color);
     }
 }
 
 function drawBorder() {
     // Simple border
     for (var x = 0; x < 320; x += 10) {
-        drawText5x8(x, 5, '~', COLORS.border);
-        drawText5x8(x, 235, '~', COLORS.border);
+        ScreenDraw.text5x8(x, 5, '~', COLORS.border);
+        ScreenDraw.text5x8(x, 235, '~', COLORS.border);
     }
     
     for (var y = 10; y < 240; y += 10) {
-        drawText5x8(5, y, '|', COLORS.border);
-        drawText5x8(315, y, '|', COLORS.border);
+        ScreenDraw.text5x8(5, y, '|', COLORS.border);
+        ScreenDraw.text5x8(315, y, '|', COLORS.border);
     }
 }
 
@@ -707,18 +707,18 @@ function getOptionsForSetting(key) {
 }
 
 function draw() {
-    clearScreen(COLORS.bg_main);
+    ScreenDraw.clear(COLORS.bg_main);
     drawBorder();
     
     // Title
-    drawText8x8(50, 15, 'Gambatte/Gameboy Palette Picker', COLORS.text_title);
+    ScreenDraw.text8x8(50, 15, 'Gambatte/Gameboy Palette Picker', COLORS.text_title);
     
     var y = 35;
     
     if (showingPalette) {
         // Palette/option selection mode
         var currentSetting = configEntries[selectedEntry];
-        drawText5x8(20, y, 'Select option for: ' + currentSetting.key, COLORS.text_main);
+        ScreenDraw.text5x8(20, y, 'Select option for: ' + currentSetting.key, COLORS.text_main);
         y += 10;
         
         // Show pack info for TWB64 palette settings
@@ -726,7 +726,7 @@ function draw() {
             var currentPack = getCurrentTWB64Pack();
             var packRange = currentPack === 1 ? '001-100' : currentPack === 2 ? '101-200' : '201-300';
             var availableOptions = getOptionsForSetting(currentSetting.key);
-            drawText5x8(20, y, 'Showing TWB64 Pack ' + currentPack + ' (Palettes ' + packRange + ') - ' + availableOptions.length + ' options', COLORS.text_title);
+            ScreenDraw.text5x8(20, y, 'Showing TWB64 Pack ' + currentPack + ' (Palettes ' + packRange + ') - ' + availableOptions.length + ' options', COLORS.text_title);
             y += 10;
         }
         y += 5;
@@ -746,7 +746,7 @@ function draw() {
                 displayName = displayName.substring(0, 25) + '...';
             }
             
-            drawText5x8(20, y, (isSelected ? '> ' : '  ') + displayName, textColor);
+            ScreenDraw.text5x8(20, y, (isSelected ? '> ' : '  ') + displayName, textColor);
             
             // Show compact palette preview for all visible palettes
             if (findPaletteColors(optionName)) {
@@ -757,25 +757,25 @@ function draw() {
         }
         
         // Controls
-        drawText5x8(20, 220, 'Up/Down: Navigate  A: Select  B: Cancel', COLORS.text_white);
+        ScreenDraw.text5x8(20, 220, 'Up/Down: Navigate  A: Select  B: Cancel', COLORS.text_white);
         
     } else {
         // Main config mode
-        drawText5x8(20, y, 'Gambatte/Gameboy Palette Configuration', COLORS.text_info);
+        ScreenDraw.text5x8(20, y, 'Gambatte/Gameboy Palette Configuration', COLORS.text_info);
         y += 15;
         
         // Show current TWB64 pack info with debug details
         var currentPack = getCurrentTWB64Pack();
         var packInfo = 'Current TWB64 Pack: ' + currentPack + ' (Palettes ' + 
                       (currentPack === 1 ? '001-100' : currentPack === 2 ? '101-200' : '201-300') + ')';
-        drawText5x8(20, y, packInfo, COLORS.text_title);
+        ScreenDraw.text5x8(20, y, packInfo, COLORS.text_title);
         y += 10;
         
         // Debug: Show which internal_palette value is set
         for (var i = 0; i < configEntries.length; i++) {
             if (configEntries[i].key.indexOf('internal_palette') >= 0) {
                 var debugValue = configEntries[i].value.replace(/"/g, '');
-                drawText5x8(20, y, 'Debug: internal_palette = "' + debugValue + '"', COLORS.text_info);
+                ScreenDraw.text5x8(20, y, 'Debug: internal_palette = "' + debugValue + '"', COLORS.text_info);
                 break;
             }
         }
@@ -789,7 +789,7 @@ function draw() {
             
             // Setting name
             var keyName = entry.key.replace('gambatte_gb_', '').replace('_', ' ');
-            drawText5x8(20, y, (isSelected ? '> ' : '  ') + keyName, textColor);
+            ScreenDraw.text5x8(20, y, (isSelected ? '> ' : '  ') + keyName, textColor);
             y += 10;
             
             // Current value
@@ -798,15 +798,15 @@ function draw() {
                 valueName = valueName.substring(0, 37) + '...';
             }
             
-            drawText5x8(25, y, 'Value: ' + valueName, COLORS.text_main);
+            ScreenDraw.text5x8(25, y, 'Value: ' + valueName, COLORS.text_main);
             
             // Show explanation for important settings
             if (entry.key.indexOf('colorization') >= 0) {
                 y += 10;
-                drawText5x8(25, y, 'Controls which palettes are available', COLORS.text_info);
+                ScreenDraw.text5x8(25, y, 'Controls which palettes are available', COLORS.text_info);
             } else if (entry.key.indexOf('internal_palette') >= 0) {
                 y += 10;
-                drawText5x8(25, y, 'Active when colorization = "internal"', COLORS.text_info);
+                ScreenDraw.text5x8(25, y, 'Active when colorization = "internal"', COLORS.text_info);
             } else if (entry.key.indexOf('palette_twb64') >= 0) {
                 y += 10;
                 var packNum = entry.key.indexOf('palette_twb64_1') >= 0 ? 1 : 
@@ -814,7 +814,7 @@ function draw() {
                 var isActive = getCurrentTWB64Pack() === packNum;
                 var statusText = isActive ? 'ACTIVE for current pack' : 'Inactive (Pack ' + packNum + ')';
                 var statusColor = isActive ? COLORS.text_success : COLORS.text_info;
-                drawText5x8(25, y, statusText, statusColor);
+                ScreenDraw.text5x8(25, y, statusText, statusColor);
             }
             
             // Show palette preview if it's a known palette
@@ -827,17 +827,17 @@ function draw() {
         }
         
         // Controls
-        drawText5x8(20, 220, 'Up/Down: Navigate  A: Change  Start: Save', COLORS.text_white);
+        ScreenDraw.text5x8(20, 220, 'Up/Down: Navigate  A: Change  Start: Save', COLORS.text_white);
     }
     
     // Status
     if (statusMessage) {
         var msgColor = statusMessage.indexOf('ERROR') >= 0 ? COLORS.text_warning : COLORS.text_success;
-        drawText5x8(20, 230, statusMessage, msgColor);
+        ScreenDraw.text5x8(20, 230, statusMessage, msgColor);
     }
     
     // Footer credit
-    drawText5x8(200, 230, 'Scripted by Prosty', COLORS.text_info);
+    ScreenDraw.text5x8(200, 230, 'Scripted by Prosty', COLORS.text_info);
     
     animFrame++;
 }

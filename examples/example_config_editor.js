@@ -181,7 +181,7 @@ function toggleEntry(idx) {
 }
 
 function draw() {
-    ScreenDraw.clearScreen(0xFF101040);
+    ScreenDraw.clear(0xFF101040);
     // Header
     var title = 'Config Editor: ' + (configFiles.length ? configFiles[currentFileIdx] : '(no files)');
     ScreenDraw.text5x8(4, 0, title, 0xFFFFFF00);
