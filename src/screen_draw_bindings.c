@@ -105,14 +105,17 @@ void register_deprecated_draw_functions(duk_context *ctx) {
     duk_get_global_string(ctx, "ScreenDraw");
     duk_get_prop_string(ctx, -1, "text8x8");
     duk_put_global_string(ctx, "drawText8x8");
+    duk_pop(ctx); // Balance the stack after using ScreenDraw
     // Alias: drawText5x8 = ScreenDraw.text5x8
     duk_get_global_string(ctx, "ScreenDraw");
     duk_get_prop_string(ctx, -1, "text5x8");
     duk_put_global_string(ctx, "drawText5x8");
+    duk_pop(ctx); // Balance the stack after using ScreenDraw
     // Alias: clearScreen = ScreenDraw.clear
     duk_get_global_string(ctx, "ScreenDraw");
     duk_get_prop_string(ctx, -1, "clear");
     duk_put_global_string(ctx, "clearScreen");
+    duk_pop(ctx); // Balance the stack after using ScreenDraw
 }
 
 // Duktape function list for ScreenDraw module
