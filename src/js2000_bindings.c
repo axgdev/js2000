@@ -7,8 +7,8 @@
 #include "filesystem.h"
 #include "js2000.h"
 #include "filesystem_bindings.h"
-#include "font_render.h"
 #include "libretro.h"
+#include "screen_draw_bindings.h"
 
 // Extern framebuffer from js2000.c
 extern uint32_t js2000_fb[];
@@ -70,29 +70,6 @@ static duk_ret_t duk_print(duk_context *ctx) {
     return duk_console_log(ctx);
 }
 
-// Expose to JS: drawText8x8(x, y, text, color)
-static duk_ret_t duk_draw_text_8x8(duk_context *ctx) {
-    int nargs = duk_get_top(ctx);
-    if (nargs < 4) return DUK_RET_TYPE_ERROR;
-    int x = duk_to_int(ctx, 0);
-    int y = duk_to_int(ctx, 1);
-    const char *text = duk_to_string(ctx, 2);
-    uint32_t color = (uint32_t)duk_to_uint32(ctx, 3);
-    font_render_draw_text_8x8(js2000_fb, SCREEN_WIDTH, SCREEN_HEIGHT, x, y, text, color);
-    return 0;
-}
-
-// Expose to JS: drawText5x8(x, y, text, color)
-static duk_ret_t duk_draw_text_5x8(duk_context *ctx) {
-    int nargs = duk_get_top(ctx);
-    if (nargs < 4) return DUK_RET_TYPE_ERROR;
-    int x = duk_to_int(ctx, 0);
-    int y = duk_to_int(ctx, 1);
-    const char *text = duk_to_string(ctx, 2);
-    uint32_t color = (uint32_t)duk_to_uint32(ctx, 3);
-    font_render_draw_text_5x8(js2000_fb, SCREEN_WIDTH, SCREEN_HEIGHT, x, y, text, color);
-    return 0;
-}
 
 // Expose to JS: getInputState() returns an integer bitmask of current button state
 static duk_ret_t duk_get_input_state(duk_context *ctx) {
@@ -124,71 +101,11 @@ static duk_ret_t duk_set_main_loop(duk_context *ctx) {
     return 0;
 }
 
-// Expose to JS: clearScreen(color)
-static duk_ret_t duk_clear_screen(duk_context *ctx) {
-    uint32_t color = (uint32_t)duk_to_uint32(ctx, 0);
-    clear_screen_c(color);
-    return 0;
-}
-
 // Expose to JS: printToScreen(msg)
 static duk_ret_t duk_print_to_screen(duk_context *ctx) {
     const char *msg = duk_safe_to_string(ctx, 0);
     print_screen_add_line(msg);
     print_screen_render();
-    return 0;
-}
-
-// Expose to JS: fillRect(x, y, w, h, color)
-static duk_ret_t duk_fill_rect(duk_context *ctx) {
-    int x = duk_to_int(ctx, 0);
-    int y = duk_to_int(ctx, 1);
-    int w = duk_to_int(ctx, 2);
-    int h = duk_to_int(ctx, 3);
-    uint32_t color = (uint32_t)duk_to_uint32(ctx, 4);
-    font_render_fill_rect(js2000_fb, SCREEN_WIDTH, SCREEN_HEIGHT, x, y, w, h, color);
-    return 0;
-}
-
-// Expose to JS: drawRect(x, y, w, h, color)
-static duk_ret_t duk_draw_rect(duk_context *ctx) {
-    int x = duk_to_int(ctx, 0);
-    int y = duk_to_int(ctx, 1);
-    int w = duk_to_int(ctx, 2);
-    int h = duk_to_int(ctx, 3);
-    uint32_t color = (uint32_t)duk_to_uint32(ctx, 4);
-    font_render_draw_rect(js2000_fb, SCREEN_WIDTH, SCREEN_HEIGHT, x, y, w, h, color);
-    return 0;
-}
-
-// Expose to JS: drawLine(x0, y0, x1, y1, color)
-static duk_ret_t duk_draw_line(duk_context *ctx) {
-    int x0 = duk_to_int(ctx, 0);
-    int y0 = duk_to_int(ctx, 1);
-    int x1 = duk_to_int(ctx, 2);
-    int y1 = duk_to_int(ctx, 3);
-    uint32_t color = (uint32_t)duk_to_uint32(ctx, 4);
-    font_render_draw_line(js2000_fb, SCREEN_WIDTH, SCREEN_HEIGHT, x0, y0, x1, y1, color);
-    return 0;
-}
-
-// Expose framebuffer as Uint32Array: getFramebuffer()
-static duk_ret_t duk_get_framebuffer(duk_context *ctx) {
-    duk_push_fixed_buffer(ctx, SCREEN_WIDTH * SCREEN_HEIGHT * 4);
-    void *buf = duk_get_buffer(ctx, -1, NULL);
-    memcpy(buf, js2000_fb, SCREEN_WIDTH * SCREEN_HEIGHT * 4);
-    duk_push_buffer_object(ctx, -1, 0, SCREEN_WIDTH * SCREEN_HEIGHT * 4, DUK_BUFOBJ_UINT32ARRAY);
-    return 1;
-}
-
-// Expose to JS: drawImageRaw(ptr, w, h, x, y)
-static duk_ret_t duk_draw_image_raw(duk_context *ctx) {
-    void *buf = duk_require_buffer_data(ctx, 0, NULL);
-    int w = duk_to_int(ctx, 1);
-    int h = duk_to_int(ctx, 2);
-    int x = duk_to_int(ctx, 3);
-    int y = duk_to_int(ctx, 4);
-    font_render_draw_image(js2000_fb, SCREEN_WIDTH, SCREEN_HEIGHT, x, y, (const uint32_t*)buf, w, h);
     return 0;
 }
 
@@ -236,14 +153,6 @@ void js2000_register_bindings(duk_context *ctx) {
     duk_push_c_function(ctx, duk_print, 1);
     duk_put_global_string(ctx, "print");
 
-    // Register drawText8x8(x, y, text, color)
-    duk_push_c_function(ctx, duk_draw_text_8x8, 4);
-    duk_put_global_string(ctx, "drawText8x8");
-
-    // Register drawText5x8(x, y, text, color)
-    duk_push_c_function(ctx, duk_draw_text_5x8, 4);
-    duk_put_global_string(ctx, "drawText5x8");
-
     // Register getInputState()
     duk_push_c_function(ctx, duk_get_input_state, 0);
     duk_put_global_string(ctx, "getInputState");
@@ -252,31 +161,10 @@ void js2000_register_bindings(duk_context *ctx) {
     duk_push_c_function(ctx, duk_set_main_loop, 1);
     duk_put_global_string(ctx, "setMainLoop");
 
-    // Register clearScreen(color)
-    duk_push_c_function(ctx, duk_clear_screen, 1);
-    duk_put_global_string(ctx, "clearScreen");
-
     // Register printToScreen(msg)
     duk_push_c_function(ctx, duk_print_to_screen, 1);
     duk_put_global_string(ctx, "printToScreen");
 
-    // Register fillRect(x, y, w, h, color)
-    duk_push_c_function(ctx, duk_fill_rect, 5);
-    duk_put_global_string(ctx, "fillRect");
-
-    // Register drawRect(x, y, w, h, color)
-    duk_push_c_function(ctx, duk_draw_rect, 5);
-    duk_put_global_string(ctx, "drawRect");
-
-    // Register drawLine(x0, y0, x1, y1, color)
-    duk_push_c_function(ctx, duk_draw_line, 5);
-    duk_put_global_string(ctx, "drawLine");
-
-    // Register getFramebuffer()
-    duk_push_c_function(ctx, duk_get_framebuffer, 0);
-    duk_put_global_string(ctx, "getFramebuffer");
-
-    // Register drawImageRaw(ptr, w, h, x, y)
-    duk_push_c_function(ctx, duk_draw_image_raw, 5);
-    duk_put_global_string(ctx, "drawImageRaw");
+    // Register ScreenDraw module (drawing/text/framebuffer)
+    register_screen_draw_module(ctx);
 }

@@ -53,20 +53,13 @@ DUKTAPE JAVASCRIPT LIMITATIONS
 //   Print a message to an on-screen overlay (useful for debug/info).
 //   Example: printToScreen("Hello!");
 //
-// drawText(x, y, text, color) [Do not use, not completed]
-//   Draw text at (x, y) using the main font. Color is 0xAARRGGBB.
-//   Example: drawText(10, 20, "Hello", 0xFFFFFFFF);
-//
-// drawTextSimple(x, y, text, color) [Do not use, not completed]
-//   Draw text using a simple built-in font. Color is 0xAARRGGBB.
-//
-// drawText8x8(x, y, text, color)
+// ScreenDraw.text8x8(x, y, text, color)
 //   Draw text using an 8x8 pixel bitmap font. Color is 0xAARRGGBB.
 //
-// drawText5x8(x, y, text, color)
+// ScreenDraw.text5x8(x, y, text, color)
 //   Draw text using a 5x8 pixel bitmap font. Color is 0xAARRGGBB.
 //
-// clearScreen(color)
+// ScreenDraw.clearScreen(color)
 //   Fill the framebuffer with the given color (0xAARRGGBB).
 //
 // getInputState()

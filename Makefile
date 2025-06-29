@@ -2,7 +2,7 @@
 
 TARGET_NAME := js2000
 
-SOURCES_C := src/js2000.c src/js2000_bindings.c src/filesystem.c src/filesystem_bindings.c src/font_render.c src/font8x8.c src/font5x8.c duktape/duktape.c
+SOURCES_C := src/js2000.c src/js2000_bindings.c src/filesystem.c src/filesystem_bindings.c src/screen_draw.c src/screen_draw_bindings.c src/font8x8.c src/font5x8.c duktape/duktape.c
 
 BUILD_DIR := build
 

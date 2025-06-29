@@ -31,20 +31,13 @@
 //   Print a message to an on-screen overlay (useful for debug/info).
 //   Example: printToScreen("Hello!");
 //
-// drawText(x, y, text, color) [Do not use, not completed]
-//   Draw text at (x, y) using the main font. Color is 0xAARRGGBB.
-//   Example: drawText(10, 20, "Hello", 0xFFFFFFFF);
-//
-// drawTextSimple(x, y, text, color) [Do not use, not completed]
-//   Draw text using a simple built-in font. Color is 0xAARRGGBB.
-//
-// drawText8x8(x, y, text, color)
+// ScreenDraw.text8x8(x, y, text, color)
 //   Draw text using an 8x8 pixel bitmap font. Color is 0xAARRGGBB.
 //
-// drawText5x8(x, y, text, color)
+// ScreenDraw.text5x8(x, y, text, color)
 //   Draw text using a 5x8 pixel bitmap font. Color is 0xAARRGGBB.
 //
-// clearScreen(color)
+// ScreenDraw.clearScreen(color)
 //   Fill the framebuffer with the given color (0xAARRGGBB).
 //
 // getInputState()
@@ -154,7 +147,7 @@
 //
 // ---
 
-// Example: Scrollable file viewer using drawText5x8 and input
+// Example: Scrollable file viewer using text5x8 and input
 // Reads /mnt/sda1/log.txt and allows scrolling with d-pad
 
 var FILENAME = '/mnt/sda1/log.txt';
@@ -191,11 +184,11 @@ function draw() {
         if (lineIdx >= lines.length) break;
         var line = lines[lineIdx];
         var visible = line.substr(scrollX, VISIBLE_COLS);
-        drawText5x8(5, 8 + i * LINE_HEIGHT, visible, 0xFFFFFFFF);
+        ScreenDraw.text5x8(5, 8 + i * LINE_HEIGHT, visible, 0xFFFFFFFF);
     }
     // Draw status bar
     var status = 'Y:' + (scrollY+1) + '/' + lines.length + '  X:' + (scrollX+1);
-    drawText5x8(5, 0, status, 0xFF00FF00);
+    ScreenDraw.text5x8(5, 0, status, 0xFF00FF00);
 }
 
 function handleInput() {

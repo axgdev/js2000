@@ -1,10 +1,10 @@
-#include "font_render.h"
+#include "screen_draw.h"
 #include <string.h>
 #include <stdint.h>
 #include "font8x8.h"
 #include "font5x8.h"
 
-void font_render_draw_text_8x8(uint32_t *fb, int fb_width, int fb_height, int x, int y, const char *text, uint32_t color) {
+void screen_draw_text_8x8(uint32_t *fb, int fb_width, int fb_height, int x, int y, const char *text, uint32_t color) {
     for (const char *p = text; *p; ++p) {
         unsigned char ch = (unsigned char)*p;
         if (ch < 32 || ch > 127) ch = '?';
@@ -24,7 +24,7 @@ void font_render_draw_text_8x8(uint32_t *fb, int fb_width, int fb_height, int x,
     }
 }
 
-void font_render_draw_text_5x8(uint32_t *fb, int fb_width, int fb_height, int x, int y, const char *text, uint32_t color) {
+void screen_draw_text_5x8(uint32_t *fb, int fb_width, int fb_height, int x, int y, const char *text, uint32_t color) {
     for (const char *p = text; *p; ++p) {
         unsigned char ch = (unsigned char)*p;
         if (ch < 32 || ch > 127) ch = '?';
@@ -46,7 +46,7 @@ void font_render_draw_text_5x8(uint32_t *fb, int fb_width, int fb_height, int x,
 }
 
 // Draw a filled rectangle
-void font_render_fill_rect(uint32_t *fb, int fb_width, int fb_height, int x, int y, int w, int h, uint32_t color) {
+void screen_draw_fill_rect(uint32_t *fb, int fb_width, int fb_height, int x, int y, int w, int h, uint32_t color) {
     for (int py = y; py < y + h; ++py) {
         if (py < 0 || py >= fb_height) continue;
         for (int px = x; px < x + w; ++px) {
@@ -57,7 +57,7 @@ void font_render_fill_rect(uint32_t *fb, int fb_width, int fb_height, int x, int
 }
 
 // Draw a rectangle outline
-void font_render_draw_rect(uint32_t *fb, int fb_width, int fb_height, int x, int y, int w, int h, uint32_t color) {
+void screen_draw_rect(uint32_t *fb, int fb_width, int fb_height, int x, int y, int w, int h, uint32_t color) {
     for (int i = 0; i < w; ++i) {
         int px = x + i;
         if (px >= 0 && px < fb_width) {
@@ -75,7 +75,7 @@ void font_render_draw_rect(uint32_t *fb, int fb_width, int fb_height, int x, int
 }
 
 // Draw a line (Bresenham's algorithm)
-void font_render_draw_line(uint32_t *fb, int fb_width, int fb_height, int x0, int y0, int x1, int y1, uint32_t color) {
+void screen_draw_line(uint32_t *fb, int fb_width, int fb_height, int x0, int y0, int x1, int y1, uint32_t color) {
     int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
     int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
     int err = dx + dy, e2;
@@ -90,7 +90,7 @@ void font_render_draw_line(uint32_t *fb, int fb_width, int fb_height, int x0, in
 }
 
 // Draw a raw 32bpp image (no format conversion)
-void font_render_draw_image(uint32_t *fb, int fb_width, int fb_height, int x, int y, const uint32_t *img, int img_w, int img_h) {
+void screen_draw_image(uint32_t *fb, int fb_width, int fb_height, int x, int y, const uint32_t *img, int img_w, int img_h) {
     for (int iy = 0; iy < img_h; ++iy) {
         int py = y + iy;
         if (py < 0 || py >= fb_height) continue;
@@ -100,4 +100,8 @@ void font_render_draw_image(uint32_t *fb, int fb_width, int fb_height, int x, in
             fb[py * fb_width + px] = img[iy * img_w + ix];
         }
     }
+}
+
+void screen_draw_copy_framebuffer(uint32_t *fb, int fb_width, int fb_height, void *out_buf) {
+    memcpy(out_buf, fb, fb_width * fb_height * 4);
 }
