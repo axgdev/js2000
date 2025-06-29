@@ -139,6 +139,59 @@ static duk_ret_t duk_print_to_screen(duk_context *ctx) {
     return 0;
 }
 
+// Expose to JS: fillRect(x, y, w, h, color)
+static duk_ret_t duk_fill_rect(duk_context *ctx) {
+    int x = duk_to_int(ctx, 0);
+    int y = duk_to_int(ctx, 1);
+    int w = duk_to_int(ctx, 2);
+    int h = duk_to_int(ctx, 3);
+    uint32_t color = (uint32_t)duk_to_uint32(ctx, 4);
+    font_render_fill_rect(js2000_fb, SCREEN_WIDTH, SCREEN_HEIGHT, x, y, w, h, color);
+    return 0;
+}
+
+// Expose to JS: drawRect(x, y, w, h, color)
+static duk_ret_t duk_draw_rect(duk_context *ctx) {
+    int x = duk_to_int(ctx, 0);
+    int y = duk_to_int(ctx, 1);
+    int w = duk_to_int(ctx, 2);
+    int h = duk_to_int(ctx, 3);
+    uint32_t color = (uint32_t)duk_to_uint32(ctx, 4);
+    font_render_draw_rect(js2000_fb, SCREEN_WIDTH, SCREEN_HEIGHT, x, y, w, h, color);
+    return 0;
+}
+
+// Expose to JS: drawLine(x0, y0, x1, y1, color)
+static duk_ret_t duk_draw_line(duk_context *ctx) {
+    int x0 = duk_to_int(ctx, 0);
+    int y0 = duk_to_int(ctx, 1);
+    int x1 = duk_to_int(ctx, 2);
+    int y1 = duk_to_int(ctx, 3);
+    uint32_t color = (uint32_t)duk_to_uint32(ctx, 4);
+    font_render_draw_line(js2000_fb, SCREEN_WIDTH, SCREEN_HEIGHT, x0, y0, x1, y1, color);
+    return 0;
+}
+
+// Expose framebuffer as Uint32Array: getFramebuffer()
+static duk_ret_t duk_get_framebuffer(duk_context *ctx) {
+    duk_push_fixed_buffer(ctx, SCREEN_WIDTH * SCREEN_HEIGHT * 4);
+    void *buf = duk_get_buffer(ctx, -1, NULL);
+    memcpy(buf, js2000_fb, SCREEN_WIDTH * SCREEN_HEIGHT * 4);
+    duk_push_buffer_object(ctx, -1, 0, SCREEN_WIDTH * SCREEN_HEIGHT * 4, DUK_BUFOBJ_UINT32ARRAY);
+    return 1;
+}
+
+// Expose to JS: drawImageRaw(ptr, w, h, x, y)
+static duk_ret_t duk_draw_image_raw(duk_context *ctx) {
+    void *buf = duk_require_buffer_data(ctx, 0, NULL);
+    int w = duk_to_int(ctx, 1);
+    int h = duk_to_int(ctx, 2);
+    int x = duk_to_int(ctx, 3);
+    int y = duk_to_int(ctx, 4);
+    font_render_draw_image(js2000_fb, SCREEN_WIDTH, SCREEN_HEIGHT, x, y, (const uint32_t*)buf, w, h);
+    return 0;
+}
+
 // Table for FS module using Duktape's duk_function_list_entry
 static const duk_function_list_entry fs_function_list[] = {
     { "readFile", duk_read_file, 1 },
@@ -206,4 +259,24 @@ void js2000_register_bindings(duk_context *ctx) {
     // Register printToScreen(msg)
     duk_push_c_function(ctx, duk_print_to_screen, 1);
     duk_put_global_string(ctx, "printToScreen");
+
+    // Register fillRect(x, y, w, h, color)
+    duk_push_c_function(ctx, duk_fill_rect, 5);
+    duk_put_global_string(ctx, "fillRect");
+
+    // Register drawRect(x, y, w, h, color)
+    duk_push_c_function(ctx, duk_draw_rect, 5);
+    duk_put_global_string(ctx, "drawRect");
+
+    // Register drawLine(x0, y0, x1, y1, color)
+    duk_push_c_function(ctx, duk_draw_line, 5);
+    duk_put_global_string(ctx, "drawLine");
+
+    // Register getFramebuffer()
+    duk_push_c_function(ctx, duk_get_framebuffer, 0);
+    duk_put_global_string(ctx, "getFramebuffer");
+
+    // Register drawImageRaw(ptr, w, h, x, y)
+    duk_push_c_function(ctx, duk_draw_image_raw, 5);
+    duk_put_global_string(ctx, "drawImageRaw");
 }
