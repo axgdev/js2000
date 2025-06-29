@@ -29,6 +29,9 @@ You can find example scripts in the `examples/` directory of this repository. Th
 
 Warning: The API is still in development and may change in future versions. I'll do my best to keep this documentation up to date, but please refer to the source code for the most accurate information, particularly js2000_bindings.c.
 
+**Deprecation Notice:**
+The old drawing functions (`drawText8x8`, `drawText5x8`, `clearScreen`) are deprecated and will be removed in a future release. They currently forward to the new `ScreenDraw` API and print a warning. Please update your scripts to use `ScreenDraw.text8x8`, `ScreenDraw.text5x8`, and `ScreenDraw.clear`.
+
 DUKTAPE JAVASCRIPT LIMITATIONS
 
 - Most standard ECMAScript 5.1 features are supported (functions, objects, arrays, math, etc).
@@ -53,14 +56,66 @@ DUKTAPE JAVASCRIPT LIMITATIONS
 //   Print a message to an on-screen overlay (useful for debug/info).
 //   Example: printToScreen("Hello!");
 //
+// ---
+//
+// ScreenDraw MODULE (RECOMMENDED)
+//
 // ScreenDraw.text8x8(x, y, text, color)
-//   Draw text using an 8x8 pixel bitmap font. Color is 0xAARRGGBB.
+//   Draw text using an 8x8 pixel bitmap font.
+//   - x, y: Top-left position in pixels (integers)
+//   - text: String to draw
+//   - color: 0xAARRGGBB (hex integer, e.g. 0xFFFFFFFF for white)
+//   Example: ScreenDraw.text8x8(10, 20, "Hello", 0xFF00FF00);
 //
 // ScreenDraw.text5x8(x, y, text, color)
-//   Draw text using a 5x8 pixel bitmap font. Color is 0xAARRGGBB.
+//   Draw text using a 5x8 pixel bitmap font.
+//   - x, y: Top-left position in pixels (integers)
+//   - text: String to draw
+//   - color: 0xAARRGGBB
+//   Example: ScreenDraw.text5x8(0, 0, "Tiny!", 0xFFFF0000);
 //
-// ScreenDraw.clearScreen(color)
+// ScreenDraw.clear(color)
 //   Fill the framebuffer with the given color (0xAARRGGBB).
+//   - color: 0xAARRGGBB
+//   Example: ScreenDraw.clear(0xFF000000); // Black
+//
+// ScreenDraw.fillRect(x, y, w, h, color)
+//   Draw a filled rectangle.
+//   - x, y: Top-left position
+//   - w, h: Width and height
+//   - color: 0xAARRGGBB
+//   Example: ScreenDraw.fillRect(10, 10, 50, 20, 0xFF00FFFF);
+//
+// ScreenDraw.rect(x, y, w, h, color)
+//   Draw a rectangle outline.
+//   - x, y: Top-left position
+//   - w, h: Width and height
+//   - color: 0xAARRGGBB
+//   Example: ScreenDraw.rect(5, 5, 100, 50, 0xFFFFFF00);
+//
+// ScreenDraw.line(x0, y0, x1, y1, color)
+//   Draw a line from (x0, y0) to (x1, y1).
+//   - color: 0xAARRGGBB
+//   Example: ScreenDraw.line(0, 0, 100, 100, 0xFFFF00FF);
+//
+// ScreenDraw.imageRaw(x, y, w, h, buffer)
+//   Draw a raw image from a Uint8Array/ArrayBuffer.
+//   - x, y: Top-left position
+//   - w, h: Width and height
+//   - buffer: Pixel data (RGBA8888, length = w*h*4)
+//   Example: ScreenDraw.imageRaw(0, 0, 16, 16, myImageBuffer);
+//
+// ScreenDraw.getFramebuffer()
+//   Returns a Uint8Array view of the framebuffer (RGBA8888).
+//   Example: var fb = ScreenDraw.getFramebuffer();
+//
+// ---
+//
+// Deprecated (will be removed):
+//   drawText8x8(x, y, text, color) => ScreenDraw.text8x8(x, y, text, color)
+//   drawText5x8(x, y, text, color) => ScreenDraw.text5x8(x, y, text, color)
+//   clearScreen(color) => ScreenDraw.clear(color)
+//   These print a warning and forward to the new API.
 //
 // getInputState()
 //   Returns an integer bitmask of the current button state (see docs for mapping).

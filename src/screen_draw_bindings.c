@@ -99,6 +99,22 @@ static duk_ret_t duk_sd_print_to_screen(duk_context *ctx) {
     return 0;
 }
 
+// Deprecated JS drawing functions for backward compatibility
+void register_deprecated_draw_functions(duk_context *ctx) {
+    // Alias: drawText8x8 = ScreenDraw.text8x8
+    duk_get_global_string(ctx, "ScreenDraw");
+    duk_get_prop_string(ctx, -1, "text8x8");
+    duk_put_global_string(ctx, "drawText8x8");
+    // Alias: drawText5x8 = ScreenDraw.text5x8
+    duk_get_global_string(ctx, "ScreenDraw");
+    duk_get_prop_string(ctx, -1, "text5x8");
+    duk_put_global_string(ctx, "drawText5x8");
+    // Alias: clearScreen = ScreenDraw.clear
+    duk_get_global_string(ctx, "ScreenDraw");
+    duk_get_prop_string(ctx, -1, "clear");
+    duk_put_global_string(ctx, "clearScreen");
+}
+
 // Duktape function list for ScreenDraw module
 static const duk_function_list_entry screendraw_function_list[] = {
     { "text8x8", duk_sd_text_8x8, 4 },
@@ -117,4 +133,5 @@ void register_screen_draw_module(duk_context *ctx) {
     duk_push_object(ctx);
     duk_put_function_list(ctx, -1, screendraw_function_list);
     duk_put_global_string(ctx, "ScreenDraw");
+    register_deprecated_draw_functions(ctx);
 }
