@@ -254,3 +254,37 @@ duk_ret_t duk_list_dirs_count(duk_context *ctx) {
     duk_push_int(ctx, count);
     return 1;
 }
+
+// Table for FS module using Duktape's duk_function_list_entry
+static const duk_function_list_entry fs_function_list[] = {
+    { "readFile", duk_read_file, 1 },
+    { "readTextFile", duk_read_text_file, 1 },
+    { "writeFile", duk_write_file, 2 },
+    { "writeTextFile", duk_write_text_file, 2 },
+    { "appendTextFile", duk_append_text_file, 2 },
+    { "removeFile", duk_remove_file, 1 },
+    { "renameFile", duk_rename_file, 2 },
+    { "mkdir", duk_mkdir, 1 },
+    { "rmdir", duk_rmdir, 1 },
+    { "fileExists", duk_file_exists, 1 },
+    { "fileSize", duk_file_size, 1 },
+    { "moveFile", duk_move_file, 2 },
+    { "isDir", duk_is_dir, 1 },
+    { "isFile", duk_is_file, 1 },
+    { "touchFile", duk_touch_file, 1 },
+    { "getModTime", duk_get_mod_time, 1 },
+    { "listFiles", duk_list_files, 1 },
+    { "listDirs", duk_list_dirs, 1 },
+    { "listFilesCount", duk_list_files_count, 1 },
+    { "listDirsCount", duk_list_dirs_count, 1 },
+    { "copyFile", duk_copy_file, DUK_VARARGS },
+    { "copyDirFiles", duk_copy_dir_files, DUK_VARARGS },
+    { "copyDirFilesPattern", duk_copy_dir_files_pattern, DUK_VARARGS },
+    { NULL, NULL, 0 }
+};
+
+void register_filesystem_module(duk_context *ctx) {
+    duk_push_object(ctx);
+    duk_put_function_list(ctx, -1, fs_function_list);
+    duk_put_global_string(ctx, "FS");
+}
