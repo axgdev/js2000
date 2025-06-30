@@ -1,6 +1,7 @@
 #include "screen_draw.h"
 #include <string.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include "font8x8.h"
 #include "font5x8.h"
 
