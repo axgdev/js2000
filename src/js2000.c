@@ -6,7 +6,6 @@
 #include "debug.h"
 #include "js2000_bindings.h"
 #include "js2000.h"
-#include "font_render.h"
 
 // Framebuffer for text rendering
 uint32_t js2000_fb[SCREEN_WIDTH * SCREEN_HEIGHT];

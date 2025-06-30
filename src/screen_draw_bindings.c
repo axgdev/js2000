@@ -99,6 +99,56 @@ static duk_ret_t duk_sd_print_to_screen(duk_context *ctx) {
     return 0;
 }
 
+// Print-to-screen buffer
+#define PRINT_SCREEN_MAX_LINES 32
+#define PRINT_SCREEN_LINE_LEN 80
+static char print_screen_lines[PRINT_SCREEN_MAX_LINES][PRINT_SCREEN_LINE_LEN];
+static int print_screen_line_count = 0;
+
+static void print_screen_add_line(const char *msg) {
+    // Scroll if full
+    if (print_screen_line_count == PRINT_SCREEN_MAX_LINES) {
+        for (int i = 1; i < PRINT_SCREEN_MAX_LINES; ++i) {
+            strncpy(print_screen_lines[i-1], print_screen_lines[i], PRINT_SCREEN_LINE_LEN);
+        }
+        print_screen_line_count--;
+    }
+    strncpy(print_screen_lines[print_screen_line_count], msg, PRINT_SCREEN_LINE_LEN-1);
+    print_screen_lines[print_screen_line_count][PRINT_SCREEN_LINE_LEN-1] = '\0';
+    print_screen_line_count++;
+}
+
+// Helper: clear framebuffer to a given color
+static void clear_screen_c(uint32_t color) {
+    for (int y = 0; y < SCREEN_HEIGHT; ++y) {
+        for (int x = 0; x < SCREEN_WIDTH; ++x) {
+            js2000_fb[y * SCREEN_WIDTH + x] = color;
+        }
+    }
+}
+
+static void print_screen_render(void) {
+    clear_screen_c(0xFF000000); // Black background
+    int line_height = 9; // 8px font + 1px spacing
+    int max_visible_lines = SCREEN_HEIGHT / line_height;
+    int first = 0;
+    if (print_screen_line_count > max_visible_lines) {
+        first = print_screen_line_count - max_visible_lines;
+    }
+    int lines_to_draw = print_screen_line_count - first;
+    for (int i = 0; i < lines_to_draw; ++i) {
+        screen_draw_text_5x8(js2000_fb, SCREEN_WIDTH, SCREEN_HEIGHT, 2, 2 + i*line_height, print_screen_lines[first + i], 0xFFFFFFFF);
+    }
+}
+
+// Expose to JS: printToScreen(msg)
+static duk_ret_t duk_print_to_screen(duk_context *ctx) {
+    const char *msg = duk_safe_to_string(ctx, 0);
+    print_screen_add_line(msg);
+    print_screen_render();
+    return 0;
+}
+
 // Deprecated JS drawing functions for backward compatibility
 void register_deprecated_draw_functions(duk_context *ctx) {
     // Alias: drawText8x8 = ScreenDraw.text8x8
@@ -136,5 +186,10 @@ void register_screen_draw_module(duk_context *ctx) {
     duk_push_object(ctx);
     duk_put_function_list(ctx, -1, screendraw_function_list);
     duk_put_global_string(ctx, "ScreenDraw");
+
+    // Register printToScreen(msg)
+    duk_push_c_function(ctx, duk_print_to_screen, 1);
+    duk_put_global_string(ctx, "printToScreen");
+    
     register_deprecated_draw_functions(ctx);
 }
